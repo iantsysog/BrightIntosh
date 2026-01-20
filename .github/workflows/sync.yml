@@ -20,7 +20,7 @@ jobs:
       changes: ${{ steps.sync.outputs.changes }}
       upstream_sha: ${{ steps.sync.outputs.upstream_sha }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
           token: ${{ secrets.PAT }}
@@ -76,7 +76,7 @@ jobs:
     needs: sync
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           ref: main
           fetch-depth: 1
@@ -123,7 +123,7 @@ jobs:
           dmg="BrightIntosh-${ver}.dmg"
           create-dmg --volname BrightIntosh --app-drop-link 200 200 --skip-jenkins "$dmg" "$app_path"
           gtar --zstd -cf "$dmg.tar.zst" "$dmg"
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         with:
           name: BrightIntosh
           path: BrightIntosh/*.tar.zst
