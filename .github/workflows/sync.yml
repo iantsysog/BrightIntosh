@@ -34,7 +34,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          cd BrightIntosh
+          cd Sources
           git remote remove upstream 2>/dev/null || true
           git remote add upstream "https://github.com/${{ env.UPSTREAM_REPO }}.git"
           git fetch upstream "${{ env.UPSTREAM_BRANCH }}" --depth=1
@@ -51,7 +51,7 @@ jobs:
           git checkout "$up_sha"
 
           cd ..
-          git add BrightIntosh
+          git add Sources
 
           if git diff --cached --quiet; then
             echo "changes=false" >> "$GITHUB_OUTPUT"
@@ -85,7 +85,7 @@ jobs:
         run: |
           set -euo pipefail
 
-          cd BrightIntosh
+          cd Sources
           if [[ ! -d BrightIntosh.xcodeproj ]]; then
             exit 0
           fi
@@ -126,6 +126,6 @@ jobs:
       - uses: actions/upload-artifact@v6
         with:
           name: BrightIntosh
-          path: BrightIntosh/*.tar.zst
+          path: Sources/*.tar.zst
           retention-days: 7
           if-no-files-found: error
