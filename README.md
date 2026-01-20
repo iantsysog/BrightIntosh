@@ -1,43 +1,27 @@
-
-<p align="center">
-  <img src="https://github.com/niklasr22/BrightIntosh/assets/75939868/fd6b544e-d86d-4ab5-94af-eda67aeb0a88">
-</p>
-<p align="center">
-  <a href="https://www.brightintosh.de">View our website</a><br/><br/>
-  <a href="https://apps.apple.com/us/app/brightintosh/id6452471855?mt=12&itscg=30200&itsct=apps_box_badge&mttnsubad=6452471855" style="display: inline-block;">
-    <img src="https://toolbox.marketingtools.apple.com/api/v2/badges/download-on-the-app-store/black/en-us?releaseDate=1693267200" alt="Download on the App Store" style="width: 246px; height: 82px; vertical-align: middle; object-fit: contain;" />
-  </a>
-</p>
-
 # BrightIntosh
 
-BrightIntosh enables your MacBook Pro M1 (or newer) to use the increased brightness (1000 nits) of its XDR display at any time. By default, this is only possible when displaying HDR content.
-BrightIntosh can shift your brightness range to higher values.
-The brightness slider in the app controls how much you shift this range.
-You can still use your brightness keys to control the brightness.
-It comes with a handy menu bar item so you can toggle the increased brightness quickly and easily.
+## Disclaimer
 
-> [!IMPORTANT]
-> This tool should not harm your display as it doesn't use any low-level API calls and your OS is in full control over the display, but there is no warranty.
+This project expressly disclaims any storage, reproduction, or distribution of copyrighted materials, and all referenced or linked content remains the exclusive property of their respective rights holders, with no claim of ownership or licensing asserted herein.
 
-## Preview
+This project is provided solely for the author's personal use. You may clone or fork this repository, provided that you independently verify and ensure full compliance with all applicable laws, regulations, export controls, and other legal requirements in your jurisdiction. You bear sole responsibility for ensuring that your use, modification, or redistribution of this project does not contravene any such obligations.
 
-<p align="center">
-  <img src="https://github.com/niklasr22/BrightIntosh/assets/75939868/b8774d5c-7bfa-4661-86d0-e0e58fefbdf1">
-</p>
+## Credits
 
-Maximum brightness with BrightIntosh on the left half of the picture, default maximum brightness on the right half.
+- [niklasr22/BrightIntosh](https://github.com/niklasr22/BrightIntosh) (GPL-3.0)
 
-## Installation
+## License
 
-- [Mac App Store](https://apple.co/3r0Ghqm)
-- 👩🏼‍💻 Build it yourself 👨🏽‍💻
+1. This project is distributed under the [AGPL-3.0](LICENSE) license. All derivative works shall be subject to the same license.
+2. This project incorporates code licensed under GPL-3.0. Use of such incorporated or referenced code is governed by the terms of the respective license under which it is made available.
+3. The submission, inclusion, or listing of this project in lists, collections, rankings, or analogous compilations is expressly prohibited without the prior written consent of the author.
 
-## Contributing
+```md
+Copyright (C) 2025 iantsysog
 
-If you have any ideas, enhancements or proposals, feel free to open an issue!
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, version 3 of the License.
 
-## Known incompatibilities and problems:
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
 
-- BrightIntosh and [f.lux](https://justgetflux.com) will likely not work simultaneously
-- HDR Videos will clip when BrightIntosh is active
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
+```

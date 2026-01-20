@@ -1,0 +1,131 @@
+name: Sync
+permissions:
+  contents: write
+  actions: write
+on:
+  schedule:
+    - cron: "0 19 * * *"
+  workflow_dispatch:
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+env:
+  UPSTREAM_REPO: "niklasr22/BrightIntosh"
+  UPSTREAM_BRANCH: "main"
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    outputs:
+      changes: ${{ steps.sync.outputs.changes }}
+      upstream_sha: ${{ steps.sync.outputs.upstream_sha }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.PAT }}
+          ref: main
+          submodules: recursive
+      - id: sync
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          cd BrightIntosh
+          git remote remove upstream 2>/dev/null || true
+          git remote add upstream "https://github.com/${{ env.UPSTREAM_REPO }}.git"
+          git fetch upstream "${{ env.UPSTREAM_BRANCH }}" --depth=1
+
+          cur_sha="$(git rev-parse HEAD)"
+          up_sha="$(git rev-parse "upstream/${{ env.UPSTREAM_BRANCH }}")"
+
+          if [[ "$cur_sha" == "$up_sha" ]]; then
+            echo "changes=false" >> "$GITHUB_OUTPUT"
+            echo "upstream_sha=$up_sha" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          git checkout "$up_sha"
+
+          cd ..
+          git add BrightIntosh
+
+          if git diff --cached --quiet; then
+            echo "changes=false" >> "$GITHUB_OUTPUT"
+            echo "upstream_sha=$up_sha" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          git stash push --keep-index
+          git commit -m "feat: bump ${up_sha:0:7} [$(date -u +%FT%TZ)]"
+
+          git remote set-url origin "https://user:${{ secrets.PAT }}@github.com/${{ github.repository }}.git"
+          git pull --rebase origin main
+          git stash pop || git stash drop
+
+          git push origin main
+
+          echo "changes=true" >> "$GITHUB_OUTPUT"
+          echo "upstream_sha=$up_sha" >> "$GITHUB_ENV"
+  build:
+    if: github.event_name == 'workflow_dispatch' || needs.sync.outputs.changes == 'true'
+    runs-on: macos-26
+    needs: sync
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 1
+          submodules: recursive
+      - shell: bash
+        run: |
+          set -euo pipefail
+
+          cd BrightIntosh
+          if [[ ! -d BrightIntosh.xcodeproj ]]; then
+            exit 0
+          fi
+
+          if ! command -v create-dmg &>/dev/null; then
+            brew install create-dmg zstd gnu-tar
+          fi
+
+          xcodebuild build \
+            -scheme BrightIntosh \
+            -configuration Release \
+            -destination "generic/platform=macOS" \
+            -derivedDataPath ./DD \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO \
+            ONLY_ACTIVE_ARCH=NO \
+            | xcpretty || xcodebuild build \
+            -scheme BrightIntosh \
+            -configuration Release \
+            -destination "generic/platform=macOS" \
+            -derivedDataPath ./DD \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO \
+            ONLY_ACTIVE_ARCH=NO
+
+          app_path="$(find ./DD -name 'BrightIntosh.app' -type d -print -quit)"
+
+          if [[ -z "$app_path" ]]; then
+            exit 1
+          fi
+
+          ver='${{ github.sha }}'
+          dmg="BrightIntosh-${ver}.dmg"
+          create-dmg --volname BrightIntosh --app-drop-link 200 200 --skip-jenkins "$dmg" "$app_path"
+          gtar --zstd -cf "$dmg.tar.zst" "$dmg"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: BrightIntosh
+          path: BrightIntosh/*.tar.zst
+          retention-days: 7
+          if-no-files-found: error
