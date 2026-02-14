@@ -63,7 +63,12 @@ jobs:
           git commit -m "feat: bump ${up_sha:0:7} [$(date -u +%FT%TZ)]"
 
           git remote set-url origin "https://user:${{ secrets.PAT }}@github.com/${{ github.repository }}.git"
-          git pull --rebase origin main
+          
+          if ! git pull --rebase origin main; then
+            git rebase --abort 2>/dev/null || true
+            git pull --no-rebase origin main
+          fi
+          
           git stash pop || git stash drop
 
           git push origin main
